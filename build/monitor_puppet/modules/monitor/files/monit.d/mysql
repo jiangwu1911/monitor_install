@@ -1,0 +1,8 @@
+check process mysql with pidfile /monitor/mysql/run/mysql.pid
+    start program = "systemctl start mysqld" with timeout 10 seconds
+    stop program  = "systemctl stop mysqld"
+    if failed port 3306 protocol mysql
+        with timeout 10 seconds 
+        then restart
+    if 3 restarts within 5 cycles then timeout
+    group monitor

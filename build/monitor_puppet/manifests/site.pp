@@ -1,0 +1,3 @@
+node 'monitorserver' {
+    include monitor
+}

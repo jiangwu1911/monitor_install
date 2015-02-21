@@ -1,0 +1,4 @@
+#!/bin/sh
+
+path=`dirname $0`
+puppet apply $path/manifests/site.pp --modulepath=$path/modules
