@@ -1,4 +1,10 @@
 #!/bin/sh
 
+# Add hostname to /etc/hosts, otherwise monit cannot work
+ipaddr=$(ifconfig | awk -F" +|:" '/inet / && $3 != "127.0.0.1" {print $3}')
+hn=$(hostname)
+sed -i '/'$hn'$/ d' /etc/hosts
+echo "$ipaddr $hn" >> /etc/hosts
+
 path=`dirname $0`
 puppet apply $path/manifests/site.pp --modulepath=$path/modules
