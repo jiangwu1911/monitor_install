@@ -1,3 +1,0 @@
-node 'monitorserver' {
-    include monitor
-}
