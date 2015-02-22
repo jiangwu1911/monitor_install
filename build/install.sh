@@ -39,6 +39,7 @@ function install_package() {
 
     curl -O "${RELEASE_SERVER}/${RELEASE_VERSION}/sinoPEM.war" -s
     cp sinoPEM.war /usr/share/tomcat/webapps
+    systemctl restart tomcat
     sleep 10		# 等待tomcat解压
 
     (cd /usr/share/tomcat/webapps/sinoPEM/WEB-INF/classes
