@@ -14,10 +14,8 @@ ISODIR=../iso
 # OS packages
 rm -rf $ISODIR/repodata/
 /bin/cp comps.xml $ISODIR
+/bin/cp install.sh $ISODIR
 createrepo -g comps.xml $ISODIR
-
-mkdir $ISODIR/software/
-cp -r monitor_puppet $ISODIR/software/
 
 rm -rf $ISODIR/ks
 mkdir -p $ISODIR/ks
