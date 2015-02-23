@@ -118,9 +118,6 @@ function monit_all() {
     sed -i -s 's#^set daemon.*#set daemon 20#' /etc/monitrc
     systemctl restart monit
     echo -e "成功。"
-
-    localip=`ifconfig | grep -v 127.0.0.1 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://'`
-    echo -e "\n安装完成，请在浏览器中打开http://$localip:8080/sinoPEM, 访问机房监控程序。"
 }
 
 
@@ -129,5 +126,6 @@ config_mysql
 install_package
 monit_all
 
+sleep 5
 localip=`ifconfig | grep -v 127.0.0.1 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://'`
 echo -e "\n安装完成，请在浏览器中打开http://$localip:8080/sinoPEM, 访问机房监控程序。\n"
