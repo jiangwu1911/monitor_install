@@ -101,9 +101,9 @@ function monit_tomcat() {
     systemctl stop tomcat
     cat > /etc/monit.d/tomcat <<EOF
 check process tomcat with pidfile /run/tomcat.pid
-    start = "/usr/bin/systemctl start tomcat" with timeout 30 seconds
+    start = "/usr/bin/systemctl start tomcat" with timeout 60 seconds
     stop = "/usr/bin/systemctl stop tomcat"
-    if failed url http://localhost:8080/sinoPEM with timeout 30 seconds
+    if failed url http://localhost:8080/sinoPEM with timeout 60 seconds
         then restart
     group monitor
 EOF
