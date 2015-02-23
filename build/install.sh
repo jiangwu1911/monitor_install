@@ -10,10 +10,15 @@ DATABASE_NAME="sinopem"
 DATABASE_USER="sinopem"
 DATABASE_PASSWORD="sinopem"
 
+dt=`date '+%Y%m%d-%H%M%S'`
+logfile="install_$dt.log"
+
 
 # 配置mysql root口令, 创建sinopem库, 创建sinopem用户
 function config_mysql() {
-    mysql_secure_installation <<EOF
+    echo -ne "\n配置MySQL数据库......      "
+
+    mysql_secure_installation >> $logfile 2>&1 <<EOF
 $OLD_MYSQL_ROOT_PASSWORD
 Y
 $NEW_MYSQL_ROOT_PASSWORD
@@ -22,22 +27,45 @@ Y
 Y
 Y
 EOF
-    mysql -u root -p$NEW_MYSQL_ROOT_PASSWORD <<EOF
+
+    mysql -u root -p$NEW_MYSQL_ROOT_PASSWORD >> $logfile 2>&1 <<EOF
 CREATE DATABASE $DATABASE_NAME;  
 GRANT ALL ON $DATABASE_USER.* TO '$DATABASE_NAME'@'%' IDENTIFIED BY '$DATABASE_PASSWORD';  
 commit;  
 EOF
+
     systemctl restart mysql
+    mysql -u $DATABASE_NAME -p$DATABASE_PASSWORD -D$DATABASE_NAME -e quit >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo -e "错误，请检查提供的数据库密码是否正确。"
+        exit -1
+    else 
+        echo -e "成功。"
+    fi
+}
+
+
+# 下载文件
+function download_file() {
+    url="$1/$2"
+    curl -O $url -s
+    grep '404 Not Found1' $2
+    if [ $? -eq 0 ]; then
+        echo -e "错误，无法下载$url"
+        exit -1
+    fi
 }
 
 
 # 下载并安装应用程序
 function install_package() {
-    curl -O "${RELEASE_SERVER}/${RELEASE_VERSION}/sinotj.sql" -s
-    sed -i "/^CREATE DATABASE/d" sinotj.sql
-    mysql -u $DATABASE_USER -p$DATABASE_PASSWORD -D$DATABASE_NAME < sinotj.sql
+    echo -ne "\n下载并安装机房监控程序......      "
 
-    curl -O "${RELEASE_SERVER}/${RELEASE_VERSION}/sinoPEM.war" -s
+    download_file "${RELEASE_SERVER}/${RELEASE_VERSION}" sinotj.sql
+    sed -i "/^CREATE DATABASE/d" sinotj.sql
+    mysql -u $DATABASE_USER -p$DATABASE_PASSWORD -D$DATABASE_NAME < sinotj.sql >> $logfile 2>&1
+
+    download_file "${RELEASE_SERVER}/${RELEASE_VERSION}" sinoPEM.war
     cp sinoPEM.war /usr/share/tomcat/webapps
     systemctl restart tomcat
     sleep 10		# 等待tomcat解压
@@ -47,6 +75,7 @@ function install_package() {
      sed -i "s#^jdbc.username=.*#jdbc.username=$DATABASE_USER#" jdbc.properties
      sed -i "s#^jdbc.password=.*#jdbc.password=$DATABASE_PASSWORD#" jdbc.properties
     )
+    echo -e "成功。"
 }
 
 
@@ -79,10 +108,13 @@ EOF
 
 
 function monit_all() {
+    echo -ne "\n配置自监控服务......      "
+
     monit_mysql
     monit_tomcat
     sed -i -s 's#^set daemon.*#set daemon 20#' /etc/monitrc
     systemctl restart monit
+    echo -e "成功。"
 }
 
 
