@@ -115,7 +115,7 @@ function monit_all() {
 
     monit_mysql
     monit_tomcat
-    sed -i -s 's#^set daemon.*#set daemon 20#' /etc/monitrc
+    sed -i -s 's#^set daemon.*#set daemon 30#' /etc/monitrc
     systemctl restart monit
     echo -e "成功。"
 }
