@@ -9,6 +9,7 @@ NEW_MYSQL_ROOT_PASSWORD="password"
 DATABASE_NAME="sinopem"
 DATABASE_USER="sinopem"
 DATABASE_PASSWORD="sinopem"
+SOURCE_DIR=`dirname $0`
 
 dt=`date '+%Y%m%d-%H%M%S'`
 logfile="install_$dt.log"
@@ -34,9 +35,7 @@ GRANT ALL ON $DATABASE_USER.* TO '$DATABASE_NAME'@'%' IDENTIFIED BY '$DATABASE_P
 commit;  
 EOF
 
-    sed -i "/^lower_case_table_names.*/d" /etc/my.cnf
-    sed -i "s#^\[mysqld_safe\].*#lower_case_table_names = 1\n\n[mysqld_safe]#" /etc/my.cnf
-
+    cp $SOURCE_DIR/my.cnf /etc/my.cnf
     systemctl restart mysql
     mysql -u $DATABASE_NAME -p$DATABASE_PASSWORD -D$DATABASE_NAME -e quit >/dev/null 2>&1
     if [ $? -ne 0 ]; then

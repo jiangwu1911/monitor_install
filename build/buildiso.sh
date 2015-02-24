@@ -14,7 +14,7 @@ ISODIR=../iso
 # OS packages
 rm -rf $ISODIR/repodata/
 /bin/cp comps.xml $ISODIR
-/bin/cp install.sh $ISODIR
+/bin/cp -r sinopem $ISODIR
 createrepo -g comps.xml $ISODIR
 
 rm -rf $ISODIR/ks
