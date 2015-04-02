@@ -47,6 +47,12 @@ EOF
 }
 
 
+# 配置tomcat
+function config_tomcat() {
+    sed -i "s#^User=tomcat#User=root#" /usr/lib/systemd/system/tomcat.service
+}
+
+
 # 下载文件
 function download_file() {
     url="$1/$2"
@@ -63,14 +69,19 @@ function download_file() {
 function install_package() {
     echo -ne "\n下载并安装机房监控程序......      "
 
-    download_file "${RELEASE_SERVER}/${RELEASE_VERSION}" sinopem.sql
+    if [ ! -e sinopem.sql ]; then
+        download_file "${RELEASE_SERVER}/${RELEASE_VERSION}" sinopem.sql
+    fi
     sed -i "/^CREATE DATABASE/d" sinopem.sql
     mysql -u $DATABASE_USER -p$DATABASE_PASSWORD -D$DATABASE_NAME < sinopem.sql >> $logfile 2>&1
 
-    download_file "${RELEASE_SERVER}/${RELEASE_VERSION}" sinoPEM.war
+    if [ ! -e sinoPEM.war ]; then
+        download_file "${RELEASE_SERVER}/${RELEASE_VERSION}" sinoPEM.war
+    fi
     cp sinoPEM.war /usr/share/tomcat/webapps
-    systemctl restart tomcat
-    sleep 10		# 等待tomcat解压
+    while [ ! -e /usr/share/tomcat/webapps/sinoPEM/WEB-INF ]; do
+        sleep 1    # 等待tomcat解压
+    done
 
     (cd /usr/share/tomcat/webapps/sinoPEM/WEB-INF/classes
      sed -i "s#^jdbc.url=.*#jdbc.url=jdbc\\\:mysql\\\://127.0.0.1/$DATABASE_NAME\?useUnicode\\\=true\&characterEncoding\\\=utf8\&useOldAliasMetadataBehavior\\\=true#" jdbc.properties
@@ -122,8 +133,10 @@ function monit_all() {
 
 # 主程序
 config_mysql
+config_tomcat
 install_package
-monit_all
+systemctl restart tomcat
+#monit_all
 
 sleep 5
 localip=`ifconfig | grep -v 127.0.0.1 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://'`
