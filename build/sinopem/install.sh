@@ -79,6 +79,7 @@ function install_package() {
         download_file "${RELEASE_SERVER}/${RELEASE_VERSION}" sinoPEM.war
     fi
     cp sinoPEM.war /usr/share/tomcat/webapps
+    systemctl start tomcat
     while [ ! -e /usr/share/tomcat/webapps/sinoPEM/WEB-INF ]; do
         sleep 1    # 等待tomcat解压
     done
