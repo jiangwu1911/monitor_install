@@ -142,4 +142,6 @@ systemctl restart tomcat
 
 sleep 5
 localip=`ifconfig | grep -v 127.0.0.1 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://'`
+echo "$localip monitorserver" >> /etc/hosts
+
 echo -e "\n安装完成，请在浏览器中打开http://$localip:8080/sinoPEM, 访问机房监控程序。\n"
