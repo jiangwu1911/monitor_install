@@ -84,6 +84,7 @@ function install_package() {
     while [ ! -e /usr/share/tomcat/webapps/sinoPEM/WEB-INF ]; do
         sleep 1    # 等待tomcat解压
     done
+    sleep 3
 
     (cd /usr/share/tomcat/webapps/sinoPEM/WEB-INF/classes
      sed -i "s#^jdbc.url=.*#jdbc.url=jdbc\\\:mysql\\\://127.0.0.1/$DATABASE_NAME\?useUnicode\\\=true\&characterEncoding\\\=utf8\&useOldAliasMetadataBehavior\\\=true#" jdbc.properties
