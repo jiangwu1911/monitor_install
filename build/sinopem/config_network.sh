@@ -76,6 +76,13 @@ EOF
     systemctl restart network
 }
 
+function add_hostname() {
+    localip=`ifconfig | grep -v 127.0.0.1 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/addr://'`
+    sed -i "/.* $HOSTNAME/d" /etc/hosts
+    hostname_without_domain=`echo $HOSTNAME | awk -F'.' '{print $1}'`
+    echo "$localip $HOSTNAME $hostname_without_domain" >> /etc/hosts
+}
+
 yum install -y net-tools
 systemctl disable NetworkManager
 systemctl stop NetworkManager

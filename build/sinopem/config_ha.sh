@@ -68,6 +68,18 @@ EOF
     remote_exec $SLAVE_IP "rm -f sinopem.sql"
     remote_exec $SLAVE_IP "rm -f start_slave.sql"
 }    
+
+
+function install_haproxy() {
+    yum install -y haproxy
+    cat >>/etc/haproxy/haproxy.conf <<EOF
+listen sinopem
+    bind :80
+    mode tcp
+    server mon01 192.168.206.151:8080
+    server mon02 192.168.206.152:8080
+EOF
+}
     
     
 #copy_sshkey_to_slave
