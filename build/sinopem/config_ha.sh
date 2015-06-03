@@ -111,7 +111,7 @@ function pre_config() {
     systemctl stop tomcat
     copy_sshkey_to_slave
     yum install -y crudini
-    remote_exec_script $SLAVE_IP "yum install -y crudini"
+    remote_exec $SLAVE_IP "yum install -y crudini"
 }
 
 
