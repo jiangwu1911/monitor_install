@@ -86,7 +86,7 @@ EOF
 
 
 function config_haproxy() {
-    cat >> config_haproxy.sh <<EOF
+    cat > config_haproxy.sh <<EOF
     yum install -y haproxy
     cat >>/etc/haproxy/haproxy.cfg <<HAPROXY_CFG_END
 listen sinopem
@@ -189,13 +189,13 @@ EOF
     # 配置从节点上的keepalived
     sed -i 's/state MASTER/state BACKUP/' config_keepalived.sh
     sed -i 's/priority 100/priority 50/' config_keepalived.sh
-    remote_exec_script $SLAVE_IP config_haproxy.sh
+    remote_exec_script $SLAVE_IP config_keepalived.sh
     rm -f config_keepalived.sh    
 }
 
     
-#pre_config
-#config_mysql_ha
-#config_haproxy
+pre_config
+config_mysql_ha
+config_haproxy
 config_keepalived
-#post_config
+post_config
