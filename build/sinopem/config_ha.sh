@@ -92,11 +92,10 @@ function config_haproxy() {
 listen sinopem
     bind :80
     mode http
-    balance source
+    balance roundroubin 
     cookie SERVERID insert indirect
-    option httpchk HEAD /index.html HTTP/1.0
-    server mon01 $MASTER_IP:8080
-    server mon02 $SLAVE_IP:8080
+    server mon01 $MASTER_IP:8080 cookie A check
+    server mon02 $SLAVE_IP:8080 cookie B check
 
 HAPROXY_CFG_END
     systemctl restart haproxy
