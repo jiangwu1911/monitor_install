@@ -91,7 +91,10 @@ function config_haproxy() {
     cat >>/etc/haproxy/haproxy.cfg <<HAPROXY_CFG_END
 listen sinopem
     bind :80
-    mode tcp
+    mode http
+    balance source
+    cookie SERVERID insert indirect
+    option httpchk HEAD /index.html HTTP/1.0
     server mon01 $MASTER_IP:8080
     server mon02 $SLAVE_IP:8080
 
