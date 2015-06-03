@@ -92,7 +92,7 @@ function config_haproxy() {
 listen sinopem
     bind :80
     mode http
-    balance roundroubin 
+    balance roundrobin
     cookie SERVERID insert indirect
     server mon01 $MASTER_IP:8080 cookie A check
     server mon02 $SLAVE_IP:8080 cookie B check
