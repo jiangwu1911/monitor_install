@@ -93,7 +93,7 @@ listen sinopem
     bind :80
     mode tcp
     server mon01 $MASTER_IP:8080
-    server mon02 $MASTER_IP:8080
+    server mon02 $SLAVE_IP:8080
 
 HAPROXY_CFG_END
     systemctl restart haproxy
@@ -113,6 +113,7 @@ function pre_config() {
 
 
 function post_config() {
+    sed -i "s/127.0.0.1/$MASTER_IP/" /usr/share/tomcat/webapps/sinoPEM/WEB-INF/classes/jdbc.properties
     systemctl start tomcat
 }
 
